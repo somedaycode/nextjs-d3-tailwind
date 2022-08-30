@@ -6,8 +6,8 @@ name: Deploy Nextjs-React-D3-Tailwind
 
 on:
   # Runs on pushes targeting the default branch
-  push:
-    branches: [ "develop" ]
+  #  push:
+  #    branches: [ "develop", "feature/*" ]
 
   pull_request:
     types: [ opened ]
@@ -16,11 +16,7 @@ on:
   workflow_dispatch:
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-  pull-requests: write
+permissions: write-all
 
 # Allow one concurrent deployment
 concurrency:
