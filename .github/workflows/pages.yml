@@ -6,8 +6,8 @@ name: Deploy Nextjs-React-D3-Tailwind
 
 on:
   # Runs on pushes targeting the default branch
-  push:
-    branches: [ "develop" ]
+  #  push:
+  #    branches: [ "develop" ]
 
   pull_request:
     branches:
