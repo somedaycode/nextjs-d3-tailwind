@@ -1,3 +1,7 @@
+export type SearchError = {
+  error: { status: 401; message: 'Invalid access token' };
+};
+
 export type SearchItems = {
   href: string;
   items: SearchItem[];
