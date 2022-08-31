@@ -20,7 +20,6 @@ export default async function handler(
   const query = `/search?q=${encodeURIComponent('르세라핌')}&type=artist`;
   try {
     const data = await fetchSpotifyApi(query);
-    console.log(data);
     res.status(200).send(data);
   } catch (error) {
     res.json(error as SpotifySearchError);
