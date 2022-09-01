@@ -8,6 +8,6 @@ module.exports = {
   reactStrictMode: true,
   images: {
     loader: 'imgix',
-    path: isProduction ? LOCAL : PROD,
+    path: LOCAL,
   },
 };
