@@ -3,9 +3,9 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:dev": "NODE_ENV=development next build",
     "start": "next start",
-    "export": "next export",
-    "lhci": "yarn export && lhci autorun"
+    "export": "next export"
   },
   "dependencies": {
     "@lhci/cli": "^0.9.0",
