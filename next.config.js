@@ -6,8 +6,8 @@ const isProduction = process.env.NODE_ENV !== 'production';
 /** @type {import('next').NextConfig} */
 module.exports = {
   reactStrictMode: true,
-  // images: {
-  //   loader: 'imgix',
-  //   path: isProduction ? LOCAL : PROD,
-  // },
+  images: {
+    loader: 'imgix',
+    path: isProduction ? LOCAL : PROD,
+  },
 };
