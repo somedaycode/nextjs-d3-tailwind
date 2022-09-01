@@ -3,9 +3,13 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "build:dev": "NODE_ENV=development next build",
+    "start": "next start",
+    "export": "next export"
   },
   "dependencies": {
+    "@lhci/cli": "^0.9.0",
+    "global": "^4.4.0",
     "next": "latest",
     "react": "18.2.0",
     "react-dom": "18.2.0"
