@@ -9,7 +9,7 @@ jobs:
         with:
           node-version: 17
       - run: yarn && yarn add global @lhci/cli
-      - run: yarn build
+      - run: yarn build && yarn export
 
       - name: run lighthouse CI
         env:
