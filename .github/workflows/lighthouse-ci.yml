@@ -1,29 +1,18 @@
-name: Run lighthouse CI When Push
+name: light-house-CI
 on: [ push ]
 jobs:
-  lhci:
-    name: Lighthouse CI
+  lighthouseci:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
       - uses: actions/checkout@v2
-
-      - name: Use Node.js 17.3.1
-        uses: actions/setup-node@v1
+      - uses: actions/setup-node@v1
         with:
-          node-version: 17.3.1
+          node-version: 17
+      - run: yarn && yarn add global @lhci/cli
+      - run: yarn build
 
-      - name: Install packages
-        run: |
-          yarn
-
-      - name: Build
-        run: |
-          yarn build && yarn export
-
-      - name: Run Lighthouse CI
+      - name: run lighthouse CI
         env:
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
         run: |
-          yarn add global @lhci/cli
-          lhci autorun || echo "Fail to Run Lighthouse CI!"
+          lhci autorun || echo "fail"
