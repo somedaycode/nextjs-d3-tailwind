@@ -15,4 +15,4 @@ jobs:
         env:
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
         run: |
-          lhci autorun || echo "fail"
+          npx lhci autorun || echo "fail"
