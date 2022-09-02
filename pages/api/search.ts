@@ -1,12 +1,17 @@
-import type { SearchItems, SearchError } from '@/types/search';
+import type { SearchItems } from '@/types/search';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
-import { fetchSpotifyApi } from '@/services/server-api';
-import { saveSpotifyToken } from './token';
+import { apiHandler } from '@/helpers/api/apiHandler';
+import { requestSpotify } from '@/helpers/api/requestSpotify';
+import { errorHandler } from '@/helpers/api/errorHandler';
 
-export default async function handler(
+import { getSpotifyToken } from './token';
+
+export default apiHandler({ get: getArtist });
+
+async function getArtist(
   req: NextApiRequest,
-  res: NextApiResponse<SearchItems | SearchError>,
+  res: NextApiResponse<SearchItems>,
 ) {
   /**
    * TODO: Req body로 input
@@ -14,16 +19,10 @@ export default async function handler(
   const query = `/search?q=${encodeURIComponent('르세라핌')}&type=artist`;
 
   try {
-    let data = await fetchSpotifyApi(query);
-
-    /** search를 했지만, 토큰이 만료되었을 경우 */
-    if ('error' in data) {
-      await saveSpotifyToken();
-      data = await fetchSpotifyApi(query);
-    }
-
+    let data = await requestSpotify(query);
     res.status(200).send(data);
   } catch (error) {
-    res.json(error as SearchError);
+    await getSpotifyToken(req, res, true);
+    errorHandler('잠깐! 문제가 있어요! 다시 한번 시도해주세요', res);
   }
 }
