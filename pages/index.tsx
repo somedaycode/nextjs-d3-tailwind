@@ -4,8 +4,7 @@ import Head from 'next/head';
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { Card } from '@/components/Card';
-
+import Card from '@/components/card';
 const Home: NextPage = () => {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center py-2">
@@ -21,10 +20,10 @@ const Home: NextPage = () => {
         </h1>
         <Link href="/network">
           <a>
-            <Card
-              title="Spotify Artists Network Graph"
-              description="아무튼 굳"
-            />
+            <Card>
+              <Card.Title>Spotify Artists Network Graph</Card.Title>
+              <Card.Description>아무튼 굳</Card.Description>
+            </Card>
           </a>
         </Link>
       </main>
