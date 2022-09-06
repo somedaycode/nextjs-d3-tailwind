@@ -4,8 +4,19 @@ import Head from 'next/head';
 import Label from '@/components/Label';
 import Header from '@/components/Header';
 import { MagnifyingGlassIcon } from '@/components/icons';
+import { useEffect } from 'react';
+import { searchService } from '@/services/searchService';
+import { spotifyService } from '@/services/spotifyService';
 
 const Network: NextPage = () => {
+  useEffect(() => {
+    /**TODO: 훅으로 빼기 */
+    spotifyService.checkTokenAvailable();
+
+    /**TODO: 상태로 검색어 관리 */
+    searchService.postSearchArtist('ive').then((res) => console.log(res));
+  }, []);
+
   return (
     <div className="min-h-screen">
       <Head>
