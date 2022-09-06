@@ -7,7 +7,7 @@ import { errorHandler } from '@/helpers/api/errorHandler';
 
 import { getSpotifyToken } from './token';
 
-export default apiHandler({ get: getArtist });
+export default apiHandler({ post: getArtist });
 
 async function getArtist(
   req: NextApiRequest,
@@ -16,7 +16,9 @@ async function getArtist(
   /**
    * TODO: Req body로 input
    */
-  const query = `/search?q=${encodeURIComponent('르세라핌')}&type=artist`;
+  const artist =
+    req.body ?? errorHandler('artist가 body에 포함되지 않았습니다.', res);
+  const query = `/search?q=${encodeURIComponent(artist)}&type=artist`;
 
   try {
     let data = await requestSpotify(query);
