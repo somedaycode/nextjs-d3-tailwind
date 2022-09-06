@@ -4,7 +4,7 @@ import { errorHandler } from './errorHandler';
 type Method = 'get' | 'post';
 
 type Handler = {
-  get: (req: NextApiRequest, res: NextApiResponse) => Promise<void>;
+  get?: (req: NextApiRequest, res: NextApiResponse) => Promise<void>;
   post?: (req: NextApiRequest, res: NextApiResponse) => Promise<void>;
 };
 
