@@ -3,7 +3,7 @@ import Head from 'next/head';
 
 import Label from '@/components/Label';
 import Header from '@/components/Header';
-import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
+import { MagnifyingGlassIcon } from '@/components/icons';
 
 const Network: NextPage = () => {
   return (
