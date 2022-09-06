@@ -8,11 +8,11 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: 17
-      - run: yarn && yarn add global @lhci/cli
+      - run: yarn && yarn global add @lhci/cli
       - run: yarn build:dev && yarn export
 
       - name: run lighthouse CI
         env:
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
         run: |
-          npx lhci autorun || echo "fail"
+          lhci autorun || echo "fail"
