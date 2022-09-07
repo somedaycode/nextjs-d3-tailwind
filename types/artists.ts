@@ -1,11 +1,11 @@
-export type SearchItems = {
+export type Artists = {
   artists: {
     href: string;
-    items: SearchItem[];
+    items: Artist[];
   };
 };
 
-export type SearchItem = {
+export type Artist = {
   external_urls: {
     spotify: string;
   };
