@@ -7,7 +7,7 @@ export default class FetchClient implements HTTPClient {
     this._baseUrl = url;
   }
 
-  get<T>(url: string): Promise<T | Response> {
+  get<T>(url: string): Promise<T> {
     return fetch(`${this._baseUrl}${url}`, {
       method: 'GET',
     }).then((res) => {

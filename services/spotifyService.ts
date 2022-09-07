@@ -1,4 +1,4 @@
-import type { Artist } from '@/types';
+import type { Artist, Network } from '@/types';
 import myFetch from './http';
 
 export const spotifyService = {
@@ -9,5 +9,9 @@ export const spotifyService = {
       method: 'POST',
       body: artist,
     });
+  },
+
+  fetchRelatedArtistGraphData: (id: string): Promise<Network> => {
+    return myFetch.get(`/artists?id=${id}`);
   },
 };
