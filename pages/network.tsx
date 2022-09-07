@@ -5,16 +5,21 @@ import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 
 import { useSpotifyToken } from '@/hooks/useToken';
+import { useNetworkGraph } from '@/hooks/useNetworkGraph';
+
 import type { Artist } from '@/types';
+import { spotifyService } from '@/services/spotifyService';
 
 import Header from '@/components/Header';
 import { MagnifyingGlassIcon } from '@/components/icons';
 import Label from '@/components/Label';
-import { spotifyService } from '@/services/spotifyService';
 
 const Network: NextPage = () => {
   useSpotifyToken();
+
   const [artistKeyword, setArtistKeyword] = useState('');
+  const [currentArtistId, setCurrentArtistId] = useState('');
+  const networkGraphData = useNetworkGraph(currentArtistId);
 
   const {
     isLoading,
@@ -53,7 +58,14 @@ const Network: NextPage = () => {
               ? 'error!'
               : artists.length > 0
               ? artists.map((artist) => {
-                  return <Label key={artist.id}>{artist.name}</Label>;
+                  return (
+                    <Label
+                      key={artist.id}
+                      onClick={() => setCurrentArtistId(artist.id)}
+                    >
+                      {artist.name}
+                    </Label>
+                  );
                 })
               : null}
           </div>
