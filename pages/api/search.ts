@@ -1,4 +1,4 @@
-import type { SearchItems } from '@/types/search';
+import type { SearchItem, SearchItems } from '@/types/search';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 import { apiHandler } from '@/helpers/api/apiHandler';
@@ -11,18 +11,14 @@ export default apiHandler({ post: getArtist });
 
 async function getArtist(
   req: NextApiRequest,
-  res: NextApiResponse<SearchItems>,
+  res: NextApiResponse<SearchItem[]>,
 ) {
-  /**
-   * TODO: Req body로 input
-   */
-  const artist =
-    req.body ?? errorHandler('artist가 body에 포함되지 않았습니다.', res);
-  const query = `/search?q=${encodeURIComponent(artist)}&type=artist`;
-
   try {
-    let data = await requestSpotify(query);
-    res.status(200).send(data);
+    const artist = req.body;
+    const query = `/search?q=${encodeURIComponent(artist)}&type=artist`;
+    const data: SearchItems = await requestSpotify(query);
+    const searchArtists = data.artists.items;
+    res.status(200).json(searchArtists);
   } catch (error) {
     await getSpotifyToken(req, res, true);
     errorHandler('잠깐! 문제가 있어요! 다시 한번 시도해주세요', res);
