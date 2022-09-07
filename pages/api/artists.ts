@@ -1,5 +1,5 @@
-import type { Artist, Artists } from '@/types/artists';
 import type { NextApiRequest, NextApiResponse } from 'next';
+import type { Link, Node, Artist, Artists, Network } from '@/types';
 
 import { apiHandler } from '@/helpers/api/apiHandler';
 import { errorHandler } from '@/helpers/api/errorHandler';
@@ -13,8 +13,6 @@ import {
   setLinksFromArtists,
   setNodes,
 } from '@/utils/relatedArtists';
-
-import type { Link, Node } from '@/utils/relatedArtists';
 
 export default apiHandler({
   get: getRelatedArtistsNodeWithLinks,
@@ -36,7 +34,7 @@ async function getArtist(req: NextApiRequest, res: NextApiResponse<Artist[]>) {
 
 async function getRelatedArtistsNodeWithLinks(
   req: NextApiRequest,
-  res: NextApiResponse<any>,
+  res: NextApiResponse<Network>,
 ) {
   const nodes = new Map<string, Node>();
   const links = new Set<Link>();

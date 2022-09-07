@@ -1,19 +1,5 @@
 import { requestSpotify } from '@/helpers/api/requestSpotify';
-import { Artist } from '@/types';
-
-export type Node = {
-  id: string;
-  url: string;
-  name: string;
-  value: number;
-};
-
-export type Link = {
-  group: string;
-  source: string;
-  target: string;
-  name: string;
-};
+import type { Link, Node, Artist } from '@/types';
 
 export async function getSingleArtistNode(artistId: string) {
   const { artists } = await requestSpotify<{ artists: Artist[] }>(
