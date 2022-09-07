@@ -1,11 +1,29 @@
-import type { NextPage } from 'next';
 import Head from 'next/head';
+import type { NextPage } from 'next';
 
-import Label from '@/components/Label';
+import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+
+import type { SearchItem } from '@/types';
+import { useSpotifyToken } from '@/hooks/useToken';
+import { searchService } from '@/services/searchService';
+
+import { MagnifyingGlassIcon } from '@/components/icons';
 import Header from '@/components/Header';
-import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
+import Label from '@/components/Label';
 
 const Network: NextPage = () => {
+  useSpotifyToken();
+  const [artistKeyword, setArtistKeyword] = useState('');
+
+  const {
+    isLoading,
+    isError,
+    data: artists,
+  } = useQuery<SearchItem[]>(['searchArtist', { artistKeyword }], () =>
+    searchService.postSearchArtist(artistKeyword),
+  );
+
   return (
     <div className="min-h-screen">
       <Head>
@@ -21,22 +39,27 @@ const Network: NextPage = () => {
               <input
                 className="w-full p-4 pr-10 border-solid border-2 border-blue-400 rounded-2xl"
                 placeholder="르세라핌"
+                value={artistKeyword}
+                onChange={(e) => setArtistKeyword(e.target.value)}
               />
               <MagnifyingGlassIcon className="w-8 h-8 text-blue-300 absolute top-1/4 right-2 cursor-pointer" />
             </div>
           </label>
           <p className="flex items-center p-2 h-10 ">Are you looking for...?</p>
           <div className="grid grid-cols-4 gap-1 max-w-xl ">
-            <Label>르세라핌</Label>
-            <Label>아이브</Label>
-            <Label>아이즈원아이즈원</Label>
-            <Label>아이즈원소녀시대잇지아이즈원소녀시대잇지</Label>
-            <Label>ITZY</Label>
-            <Label>소녀시대</Label>
+            {isLoading
+              ? `${artistKeyword && 'Searching...'}`
+              : isError
+              ? 'error!'
+              : artists.length > 0
+              ? artists.map((artist) => {
+                  return <Label key={artist.id}>{artist.name}</Label>;
+                })
+              : null}
           </div>
         </form>
       </Header>
-      <main></main>
+      <main>{artistKeyword}</main>
     </div>
   );
 };

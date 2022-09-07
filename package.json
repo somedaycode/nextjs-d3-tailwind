@@ -8,8 +8,8 @@
     "export": "next export"
   },
   "dependencies": {
-    "@heroicons/react": "^2.0.10",
     "@lhci/cli": "^0.9.0",
+    "@tanstack/react-query": "^4.2.3",
     "next": "latest",
     "react": "18.2.0",
     "react-dom": "18.2.0"
