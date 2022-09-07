@@ -1,11 +1,11 @@
-export type SearchItems = {
+export type Artists = {
   artists: {
     href: string;
-    items: SearchItem[];
+    items: Artist[];
   };
 };
 
-export type SearchItem = {
+export type Artist = {
   external_urls: {
     spotify: string;
   };
@@ -18,19 +18,19 @@ export type SearchItem = {
   id: string;
   images: [
     {
-      height: number;
+      height: 640;
       url: string;
-      width: number;
+      width: 640;
     },
     {
-      height: number;
+      height: 320;
       url: string;
-      width: number;
+      width: 320;
     },
     {
-      height: number;
+      height: 160;
       url: string;
-      width: number;
+      width: 160;
     },
   ];
   name: string;

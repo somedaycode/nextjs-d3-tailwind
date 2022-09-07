@@ -1,16 +1,16 @@
-import Head from 'next/head';
 import type { NextPage } from 'next';
+import Head from 'next/head';
 
-import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { useState } from 'react';
 
-import type { SearchItem } from '@/types';
 import { useSpotifyToken } from '@/hooks/useToken';
-import { searchService } from '@/services/searchService';
+import type { Artist } from '@/types';
 
-import { MagnifyingGlassIcon } from '@/components/icons';
 import Header from '@/components/Header';
+import { MagnifyingGlassIcon } from '@/components/icons';
 import Label from '@/components/Label';
+import { spotifyService } from '@/services/spotifyService';
 
 const Network: NextPage = () => {
   useSpotifyToken();
@@ -20,8 +20,8 @@ const Network: NextPage = () => {
     isLoading,
     isError,
     data: artists,
-  } = useQuery<SearchItem[]>(['searchArtist', { artistKeyword }], () =>
-    searchService.postSearchArtist(artistKeyword),
+  } = useQuery<Artist[]>(['searchArtist', { artistKeyword }], () =>
+    spotifyService.postSearchArtist(artistKeyword),
   );
 
   return (

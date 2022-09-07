@@ -5,7 +5,7 @@ import { cacheStore } from '@/utils/cache';
 
 const API_END_POINT = 'https://api.spotify.com/v1';
 
-export const requestSpotify = (path: string = '') => {
+export const requestSpotify = <T>(path: string = ''): Promise<T> => {
   const tokenData: ClientAccess = cacheStore.getCache(SPOTIFY_TOKEN);
 
   const { token_type, access_token } = tokenData;
