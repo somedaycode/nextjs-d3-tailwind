@@ -1,6 +1,4 @@
-import HTTPClient, { FilterByStatus, HTTPClientBuilder } from './httpClient';
-
-const identifier: FilterByStatus = (_) => _;
+import HTTPClient, { HTTPClientBuilder } from './httpClient';
 
 export default class FetchClient implements HTTPClient {
   private _baseUrl = '';
@@ -9,36 +7,20 @@ export default class FetchClient implements HTTPClient {
     this._baseUrl = url;
   }
 
-  private _successFilter = identifier;
-
-  set successFilter(filter: FilterByStatus) {
-    this._successFilter = filter;
-  }
-
-  private _failFilter = identifier;
-
-  set failFilter(filter: FilterByStatus) {
-    this._failFilter = filter;
-  }
-
-  get(url: string): Promise<unknown> {
+  get<T>(url: string): Promise<T | Response> {
     return fetch(`${this._baseUrl}${url}`, {
       method: 'GET',
     }).then((res) => {
-      return res.status !== 200
-        ? res.json().then((body) => this._failFilter(body))
-        : res.json().then((body) => this._successFilter(body));
+      return res.json();
     });
   }
 
-  post(url: string, options: RequestInit): Promise<unknown> {
+  post<T>(url: string, options: RequestInit): Promise<T> {
     return fetch(`${this._baseUrl}${url}`, {
       method: 'POST',
       ...options,
     }).then((res) => {
-      return res.status !== 200
-        ? res.json().then((body) => this._failFilter(body))
-        : res.json().then((body) => this._successFilter(body));
+      return res.json();
     });
   }
 }
@@ -52,16 +34,6 @@ export class FetchClientBuilder implements HTTPClientBuilder {
 
   setBaseUrl(url: string): HTTPClientBuilder {
     this.instance.baseUrl = url;
-    return this;
-  }
-
-  setFailFilter(filter: FilterByStatus): HTTPClientBuilder {
-    this.instance.failFilter = filter;
-    return this;
-  }
-
-  setSuccessFilter(filter: FilterByStatus): HTTPClientBuilder {
-    this.instance.successFilter = filter;
     return this;
   }
 

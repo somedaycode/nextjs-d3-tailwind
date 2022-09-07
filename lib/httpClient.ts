@@ -1,6 +1,6 @@
 export default interface HTTPClient {
-  get(url: string): Promise<unknown>;
-  post<T>(url: string, options: RequestInit): Promise<T | unknown>;
+  get(url: string): Promise<Response>;
+  post<T>(url: string, options: RequestInit): Promise<T>;
 }
 
 export type FilterByStatus = (
@@ -9,10 +9,6 @@ export type FilterByStatus = (
 
 export interface HTTPClientBuilder {
   setBaseUrl(url: string): HTTPClientBuilder;
-
-  setSuccessFilter(filter: FilterByStatus): HTTPClientBuilder;
-
-  setFailFilter(filter: FilterByStatus): HTTPClientBuilder;
 
   build(): HTTPClient;
 }
