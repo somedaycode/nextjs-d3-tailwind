@@ -1,6 +1,8 @@
 export type SearchItems = {
-  href: string;
-  items: SearchItem[];
+  artists: {
+    href: string;
+    items: SearchItem[];
+  };
 };
 
 export type SearchItem = {
