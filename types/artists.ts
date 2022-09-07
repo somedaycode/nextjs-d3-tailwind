@@ -18,19 +18,19 @@ export type Artist = {
   id: string;
   images: [
     {
-      height: number;
+      height: 640;
       url: string;
-      width: number;
+      width: 640;
     },
     {
-      height: number;
+      height: 320;
       url: string;
-      width: number;
+      width: 320;
     },
     {
-      height: number;
+      height: 160;
       url: string;
-      width: number;
+      width: 160;
     },
   ];
   name: string;
