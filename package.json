@@ -1,5 +1,16 @@
 {
-  "private": true,
+  "name": "nextjs-react-d3-tailwind-project",
+  "version": "0.0.1",
+  "author": {
+    "name": "somedaycode",
+    "email": "somedaycode@gmail.com",
+    "url": "https://somedaycode.tistory.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/somedaycode/nextjs-d3-tailwind/"
+  },
+  "license": "MIT",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -10,11 +21,13 @@
   "dependencies": {
     "@lhci/cli": "^0.9.0",
     "@tanstack/react-query": "^4.2.3",
+    "d3": "^7.6.1",
     "next": "latest",
     "react": "18.2.0",
     "react-dom": "18.2.0"
   },
   "devDependencies": {
+    "@types/d3": "^7.4.0",
     "@types/node": "18.7.13",
     "@types/react": "18.0.9",
     "@types/react-dom": "18.0.5",
