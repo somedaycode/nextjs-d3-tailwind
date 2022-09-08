@@ -9,6 +9,7 @@ export function useNetworkGraph(id: string) {
   });
 
   useEffect(() => {
+    if (!id) return;
     const fetchGraphData = async () => {
       const data = await spotifyService.fetchRelatedArtistGraphData(id);
       setNetworkGraphData(data);
