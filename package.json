@@ -1,5 +1,16 @@
 {
-  "private": true,
+  "name": "nextjs-react-d3-tailwind-project",
+  "version": "0.0.1",
+  "author": {
+    "name": "somedaycode",
+    "email": "somedaycode@gmail.com",
+    "url": "https://somedaycode.tistory.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/somedaycode/nextjs-d3-tailwind/"
+  },
+  "license": "MIT",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
