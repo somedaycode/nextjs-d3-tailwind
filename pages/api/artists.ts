@@ -64,7 +64,7 @@ async function getRelatedArtistsNodeWithLinks(
         const nextNodeId = nodesFromStartNode[i].id;
         setLinksFromArtists(artistList, links, nextNodeId);
         const nextNewNodes = getArtistNodes(artistList) as Node[];
-        setNodes(nextNewNodes, nodes);
+        setNodes(nextNewNodes, nodes, 2);
       }),
     );
 

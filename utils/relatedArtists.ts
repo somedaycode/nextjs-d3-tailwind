@@ -10,7 +10,7 @@ export async function getSingleArtistNode(artistId: string) {
     id,
     url: external_urls.spotify,
     name,
-    value: 1,
+    value: 0,
   };
 }
 
@@ -21,7 +21,7 @@ export async function getRelatedArtistsById(id: string) {
 }
 export function getArtistNodes(artistList: Artist[]) {
   return artistList.map(({ id, external_urls, name }) => {
-    return { id, url: external_urls.spotify, name, value: 1 };
+    return { id, url: external_urls.spotify, name };
   });
 }
 export function setLinksFromArtists(
@@ -33,12 +33,14 @@ export function setLinksFromArtists(
     links.add({ group, source: group, target: id, name });
   });
 }
-export function setNodes(nodes: Node[], originalNodes: Map<string, Node>) {
+export function setNodes(
+  nodes: Omit<Node, 'value'>[],
+  originalNodes: Map<string, Node>,
+  value = 1,
+) {
   nodes.forEach((node) => {
-    if (originalNodes.has(node.id)) {
-      return originalNodes.set(node.id, { ...node, value: node.value + 1 });
-    }
+    if (originalNodes.has(node.id)) return;
 
-    originalNodes.set(node.id, node);
+    originalNodes.set(node.id, { ...node, value });
   });
 }
