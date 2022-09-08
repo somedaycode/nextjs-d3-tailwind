@@ -13,6 +13,7 @@ import { spotifyService } from '@/services/spotifyService';
 import Header from '@/components/Header';
 import { MagnifyingGlassIcon } from '@/components/icons';
 import Label from '@/components/Label';
+import NetworkGraph from '@/components/NetworkGraph';
 
 const Network: NextPage = () => {
   useSpotifyToken();
@@ -30,7 +31,7 @@ const Network: NextPage = () => {
   );
 
   return (
-    <div className="min-h-screen">
+    <div className="flex flex-col items-center min-h-screen">
       <Head>
         <title>Spotify Artists Network Graph</title>
       </Head>
@@ -51,7 +52,7 @@ const Network: NextPage = () => {
             </div>
           </label>
           <p className="flex items-center p-2 h-10 ">Are you looking for...?</p>
-          <div className="grid grid-cols-4 gap-1 max-w-xl ">
+          <div className="grid grid-cols-4 gap-1 max-w-xl h-40">
             {isLoading
               ? `${artistKeyword && 'Searching...'}`
               : isError
@@ -71,7 +72,9 @@ const Network: NextPage = () => {
           </div>
         </form>
       </Header>
-      <main>{artistKeyword}</main>
+      <main className="w-3/4 h-full">
+        <NetworkGraph networkGraphData={networkGraphData} />
+      </main>
     </div>
   );
 };
