@@ -1,14 +1,11 @@
 import type { NextPage } from 'next';
 import Head from 'next/head';
 
-import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 
-import { useSpotifyToken } from '@/hooks/useToken';
 import { useNetworkGraph } from '@/hooks/useNetworkGraph';
-
-import type { Artist } from '@/types';
-import { spotifyService } from '@/services/spotifyService';
+import { useSpotifyToken } from '@/hooks/useToken';
+import { useSearchArtists } from '@/hooks/useSearchArtists';
 
 import Header from '@/components/Header';
 import { MagnifyingGlassIcon } from '@/components/icons';
@@ -20,15 +17,9 @@ const Network: NextPage = () => {
 
   const [artistKeyword, setArtistKeyword] = useState('');
   const [currentArtistId, setCurrentArtistId] = useState('');
-  const networkGraphData = useNetworkGraph(currentArtistId);
 
-  const {
-    isLoading,
-    isError,
-    data: artists,
-  } = useQuery<Artist[]>(['searchArtist', { artistKeyword }], () =>
-    spotifyService.postSearchArtist(artistKeyword),
-  );
+  const networkGraphData = useNetworkGraph(currentArtistId);
+  const artistsList = useSearchArtists(artistKeyword);
 
   return (
     <div className="flex flex-col items-center min-h-screen">
@@ -53,22 +44,17 @@ const Network: NextPage = () => {
           </label>
           <p className="flex items-center p-2 h-10 ">Are you looking for...?</p>
           <div className="grid grid-cols-4 gap-1 max-w-xl h-40">
-            {isLoading
-              ? `${artistKeyword && 'Searching...'}`
-              : isError
-              ? 'error!'
-              : artists.length > 0
-              ? artists.map((artist) => {
-                  return (
-                    <Label
-                      key={artist.id}
-                      onClick={() => setCurrentArtistId(artist.id)}
-                    >
-                      {artist.name}
-                    </Label>
-                  );
-                })
-              : null}
+            {artistsList.length > 0 &&
+              artistsList.map((artist) => {
+                return (
+                  <Label
+                    key={artist.id}
+                    onClick={() => setCurrentArtistId(artist.id)}
+                  >
+                    {artist.name}
+                  </Label>
+                );
+              })}
           </div>
         </form>
       </Header>

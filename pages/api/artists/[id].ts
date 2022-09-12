@@ -1,11 +1,9 @@
+import type { Link, Network, Node } from '@/types';
 import type { NextApiRequest, NextApiResponse } from 'next';
-import type { Link, Node, Artist, Artists, Network } from '@/types';
 
 import { apiHandler } from '@/helpers/api/apiHandler';
 import { errorHandler } from '@/helpers/api/errorHandler';
-import { requestSpotify } from '@/helpers/api/requestSpotify';
 
-import { getSpotifyToken } from './token';
 import {
   getArtistNodes,
   getRelatedArtistsById,
@@ -16,21 +14,7 @@ import {
 
 export default apiHandler({
   get: getRelatedArtistsNodeWithLinks,
-  post: getArtist,
 });
-
-async function getArtist(req: NextApiRequest, res: NextApiResponse<Artist[]>) {
-  try {
-    const artist = req.body;
-    const query = `/search?q=${encodeURIComponent(artist)}&type=artist`;
-    const data: Artists = await requestSpotify(query);
-    const searchArtists = data.artists.items;
-    res.status(200).json(searchArtists);
-  } catch (error) {
-    await getSpotifyToken(req, res, true);
-    errorHandler('잠깐! 문제가 있어요! 다시 한번 시도해주세요', res);
-  }
-}
 
 async function getRelatedArtistsNodeWithLinks(
   req: NextApiRequest,
@@ -75,6 +59,6 @@ async function getRelatedArtistsNodeWithLinks(
 
     res.status(200).json(result);
   } catch (error) {
-    errorHandler('잠깐! 문제가 있어요! 다시 한번 시도해주세요', res);
+    return errorHandler('잠깐! 문제가 있어요! 다시 한번 시도해주세요', res);
   }
 }
