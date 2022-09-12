@@ -17,7 +17,8 @@ export async function getSpotifyToken(
   isRefreshing = false,
 ) {
   const savedToken = cacheStore.getCache(SPOTIFY_TOKEN);
-  if (savedToken) res.json({ status: 'ok', message: '이미 토큰이 있습니다.' });
+  if (savedToken)
+    return res.json({ status: 'ok', message: '이미 토큰이 있습니다.' });
   const body = `grant_type=client_credentials&client_id=${clientId}&client_secret=${clientSecret}`;
   const data = await fetch(ACCOUNT_API, {
     method: 'POST',
@@ -30,7 +31,7 @@ export async function getSpotifyToken(
   cacheStore.setCache(SPOTIFY_TOKEN, token);
 
   if (isRefreshing) return;
-  res
+  return res
     .status(200)
     .json({ status: 'ok', message: 'token safely saved in server' });
 }
