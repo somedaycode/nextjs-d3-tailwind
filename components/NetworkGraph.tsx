@@ -1,11 +1,13 @@
-import { useEffect, useRef } from 'react';
 import * as d3 from 'd3';
-
-import type { DragEvent, Network, NodeDatum } from '@/types';
 import { SimulationNodeDatum } from 'd3';
+import { useEffect, useRef } from 'react';
+
+import type { DragEvent, NodeDatum } from '@/types';
+
+import { useNetworkGraph } from '@/hooks/useNetworkGraph';
 
 type Props = {
-  networkGraphData: Network;
+  currentArtistId: string;
 };
 
 const fillCircleByValue = (value: number) => {
@@ -19,16 +21,24 @@ const fillCircleByValue = (value: number) => {
 const weighValueByMutiply = (value: number, mutiply = 30) =>
   Math.abs(value - 3) * mutiply;
 
-const NetworkGraph = ({ networkGraphData }: Props) => {
+const NetworkGraph = ({ currentArtistId }: Props) => {
+  const { data } = useNetworkGraph(currentArtistId);
+
+  const { nodes, links } = data;
+
   const svgRef = useRef<SVGSVGElement>(null);
-  const { nodes, links } = networkGraphData;
 
   const width = svgRef.current?.width.animVal.value as number;
   const height = svgRef.current?.height.animVal.value as number;
 
   const resetChart = () => d3.selectAll(`.network-chart > *`).remove();
 
+  const noNetworkGraphData =
+    !nodes || nodes.length === 0 || !links || links.length === 0;
+
   useEffect(() => {
+    if (noNetworkGraphData) return;
+
     resetChart();
 
     const networkGraphElement = d3.select<SVGSVGElement, unknown>(
@@ -115,7 +125,10 @@ const NetworkGraph = ({ networkGraphData }: Props) => {
       graphNode
         .attr('cx', (d: any) => d.x)
         .attr('cy', (d: any) => d.y)
-        .attr('transform', (d: any) => `translate(${d.x},${d.y})`);
+        .attr(
+          'transform',
+          (d: any) => `translate(${Number(d.x)},${Number(d.y)})`,
+        );
     };
 
     simulation.on('tick', ticked);
@@ -145,13 +158,13 @@ const NetworkGraph = ({ networkGraphData }: Props) => {
         .on('drag', dragged)
         .on('end', dragended);
     }
-  }, [networkGraphData, links, nodes, width, height]);
+
+    () => simulation.stop();
+  }, [width, height, links, nodes, noNetworkGraphData]);
 
   return (
     <div className="w-full h-[80vh]">
-      <svg ref={svgRef} className="network-chart w-full h-full">
-        NetworkGraph
-      </svg>
+      <svg ref={svgRef} className="network-chart w-full h-full"></svg>
     </div>
   );
 };

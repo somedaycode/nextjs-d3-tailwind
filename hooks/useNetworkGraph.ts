@@ -1,22 +1,16 @@
-import { spotifyService } from '@/services/spotifyService';
-import { useEffect, useState } from 'react';
+import { DEFAULT_NEWORK_VALUE } from '@/consts';
 import type { Network } from '@/types';
 
+import { useQuery } from '@tanstack/react-query';
+
+import { spotifyService } from '@/services/spotifyService';
 export function useNetworkGraph(id: string) {
-  const [networkGraphData, setNetworkGraphData] = useState<Network>({
-    nodes: [],
-    links: [],
-  });
+  return useQuery<Network>(
+    ['networkGraphData', id],
+    () => spotifyService.fetchRelatedArtistGraphData(id),
 
-  useEffect(() => {
-    if (!id) return;
-    const fetchGraphData = async () => {
-      const data = await spotifyService.fetchRelatedArtistGraphData(id);
-      setNetworkGraphData(data);
-    };
-
-    fetchGraphData();
-  }, [id]);
-
-  return networkGraphData;
+    {
+      initialData: DEFAULT_NEWORK_VALUE,
+    },
+  );
 }
