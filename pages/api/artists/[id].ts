@@ -2,7 +2,6 @@ import type { Link, Network, Node } from '@/types';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 import { apiHandler } from '@/helpers/api/apiHandler';
-import { errorHandler } from '@/helpers/api/errorHandler';
 
 import {
   getArtistNodes,
@@ -11,6 +10,7 @@ import {
   setLinksFromArtists,
   setNodes,
 } from '@/utils/relatedArtists';
+import { DEFAULT_NEWORK_VALUE } from '@/consts';
 
 export default apiHandler({
   get: getRelatedArtistsNodeWithLinks,
@@ -25,6 +25,8 @@ async function getRelatedArtistsNodeWithLinks(
 
   try {
     const id = req.query.id as string;
+    if (!id) return respondDefaultNeworkValue(res);
+
     const startNode = await getSingleArtistNode(id);
     /** 검색된 아티스트를 첫 노드에 추가 */
     nodes.set(id, startNode);
@@ -57,8 +59,12 @@ async function getRelatedArtistsNodeWithLinks(
       links: [...links],
     };
 
-    res.status(200).json(result);
+    return res.status(200).json(result);
   } catch (error) {
-    return errorHandler('잠깐! 문제가 있어요! 다시 한번 시도해주세요', res);
+    return respondDefaultNeworkValue(res, 500);
   }
+}
+
+function respondDefaultNeworkValue(res: NextApiResponse, code: number = 200) {
+  res.status(code).json(DEFAULT_NEWORK_VALUE);
 }
