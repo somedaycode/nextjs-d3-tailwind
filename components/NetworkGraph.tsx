@@ -5,17 +5,11 @@ import { useEffect, useRef } from 'react';
 import type { DragEvent, NodeDatum } from '@/types';
 
 import { useNetworkGraph } from '@/hooks/useNetworkGraph';
+import NetworkNodes from './NetworkNodes';
+import NetworkLinks from './NetworkLinks';
 
 type Props = {
   currentArtistId: string;
-};
-
-const fillCircleByValue = (value: number) => {
-  if (value === 0) return '#7DE5F5D1';
-
-  if (value === 1) return '#89D3C7D1';
-
-  return '#31ACA9D1';
 };
 
 const weighValueByMutiply = (value: number, mutiply = 30) =>
@@ -31,15 +25,27 @@ const NetworkGraph = ({ currentArtistId }: Props) => {
   const width = svgRef.current?.width.animVal.value as number;
   const height = svgRef.current?.height.animVal.value as number;
 
-  const resetChart = () => d3.selectAll(`.network-chart > *`).remove();
-
   const noNetworkGraphData =
     !nodes || nodes.length === 0 || !links || links.length === 0;
 
+  /**시뮬레이션 */
+  const simulation = d3
+    .forceSimulation(nodes as SimulationNodeDatum[])
+    .velocityDecay(0.7)
+    .force('center', d3.forceCenter(width / 2, height / 2))
+    .force('charge', d3.forceManyBody().strength(-1000))
+    .force(
+      'link',
+      d3.forceLink(links).id((d: NodeDatum) => d.id as string),
+    )
+    .force(
+      'collide',
+      d3
+        .forceCollide()
+        .radius((d: NodeDatum) => weighValueByMutiply(d.value as number, 50)),
+    );
   useEffect(() => {
     if (noNetworkGraphData) return;
-
-    resetChart();
 
     const networkGraphElement = d3.select<SVGSVGElement, unknown>(
       svgRef.current as SVGSVGElement,
@@ -49,89 +55,6 @@ const NetworkGraph = ({ currentArtistId }: Props) => {
       d3.select('svg g').attr('transform', e.transform);
     let zoom = d3.zoom<SVGSVGElement, unknown>().on('zoom', handleZoom);
     networkGraphElement.call(zoom);
-
-    const holder = networkGraphElement
-      .append('g')
-      .attr('class', 'w-full h-full');
-
-    /**
-     * 링크
-     * @todo: 컴포넌트로 분리해야함
-     * */
-    const graphLink = holder
-      .append('g')
-      .attr('stroke', '#999')
-      .attr('stroke-opacity', 0.3)
-      .selectAll('line')
-      .data(links)
-      .join('line')
-      .attr('stroke-width', () => 1);
-
-    /**시뮬레이션 */
-    const simulation = d3
-      .forceSimulation(nodes as SimulationNodeDatum[])
-      .velocityDecay(0.7)
-      .force('center', d3.forceCenter(width / 2, height / 2))
-      .force('charge', d3.forceManyBody().strength(-100))
-      .force(
-        'link',
-        d3.forceLink(links).id((d: NodeDatum) => d.id as string),
-      )
-      .force(
-        'collide',
-        d3
-          .forceCollide()
-          .radius((d: NodeDatum) => weighValueByMutiply(d.value as number, 50)),
-      );
-
-    /**
-     * Node
-     * @todo: 컴포넌트로 분리해야함
-     * */
-    const graphNode = holder
-      .append('g')
-      .attr('class', 'node')
-      .selectAll('g')
-      .data(nodes)
-      .enter()
-      .append('g')
-      .each(function (d) {
-        d3.select(this)
-          .append('circle')
-          .attr('r', weighValueByMutiply(d.value))
-          .attr('fill', fillCircleByValue(d.value));
-        d3.select(this)
-          .append('text')
-          .text(d.name)
-          .attr('font-size', '12px')
-          .attr('class', ':hover:color-sky-700')
-          .attr('dy', 6)
-          .style('text-anchor', 'middle');
-      })
-      .call(drag(simulation) as any);
-
-    /**
-     * tick
-     * @decription
-     * 'd' 타입을 정해주기가 어려워서 일단 any
-     *
-     */
-    const ticked = () => {
-      graphLink
-        .attr('x1', (d: any) => d.source.x)
-        .attr('y1', (d: any) => d.source.y)
-        .attr('x2', (d: any) => d.target.x)
-        .attr('y2', (d: any) => d.target.y);
-      graphNode
-        .attr('cx', (d: any) => d.x)
-        .attr('cy', (d: any) => d.y)
-        .attr(
-          'transform',
-          (d: any) => `translate(${Number(d.x)},${Number(d.y)})`,
-        );
-    };
-
-    simulation.on('tick', ticked);
 
     /** dragging */
     function drag(simulation: d3.Simulation<SimulationNodeDatum, undefined>) {
@@ -159,12 +82,31 @@ const NetworkGraph = ({ currentArtistId }: Props) => {
         .on('end', dragended);
     }
 
-    () => simulation.stop();
-  }, [width, height, links, nodes, noNetworkGraphData]);
+    const node = d3.selectAll('.node');
+    const link = d3.selectAll('.link');
+    const text = d3.selectAll('.text');
+
+    const ticked = () => {
+      link
+        .attr('x1', (d: any) => d.source.x)
+        .attr('y1', (d: any) => d.source.y)
+        .attr('x2', (d: any) => d.target.x)
+        .attr('y2', (d: any) => d.target.y);
+      node.attr('cx', (d: any) => d.x).attr('cy', (d: any) => d.y);
+      text.attr('x', (d: any) => d.x).attr('y', (d: any) => d.y);
+    };
+
+    simulation.on('tick', ticked);
+  }, [width, height, noNetworkGraphData, nodes, links, simulation]);
 
   return (
     <div className="w-full h-[80vh]">
-      <svg ref={svgRef} className="network-chart w-full h-full"></svg>
+      <svg ref={svgRef} className="network-chart w-full h-full">
+        <g className="w-full h-full">
+          <NetworkLinks data={links} />
+          <NetworkNodes data={nodes} />
+        </g>
+      </svg>
     </div>
   );
 };
