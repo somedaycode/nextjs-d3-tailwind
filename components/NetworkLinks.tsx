@@ -1,30 +1,31 @@
-import { Link } from '@/types';
+import { FC, useEffect, useRef } from 'react';
 import { select } from 'd3';
-import { useEffect, useRef } from 'react';
+
+import { Link } from '@/types';
 
 type LinksProps = {
-  data: Link[];
+  links: Link[];
 };
 
 type LinkProps = {
-  data: Link;
+  link: Link;
 };
 
-const NetworkLink = ({ data }: LinkProps) => {
+const NetworkLink = ({ link }: LinkProps) => {
   const lineRef = useRef<SVGLineElement>(null);
 
   useEffect(() => {
-    select(lineRef.current).data([data]);
-  }, [data]);
+    select(lineRef.current).data([link]);
+  }, [link]);
 
   return <line ref={lineRef} className="link" strokeWidth="1" />;
 };
 
-const NetworkLinks = ({ data }: LinksProps = { data: [] }) => {
+const NetworkLinks: FC<LinksProps> = ({ links } = { links: [] }) => {
   return (
     <g stroke="#999" strokeOpacity="0.3">
-      {data?.map((link, index) => (
-        <NetworkLink key={index} data={link} />
+      {links?.map((link, index) => (
+        <NetworkLink key={index} link={link} />
       ))}
     </g>
   );
