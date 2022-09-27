@@ -1,23 +1,21 @@
+import { FC, useEffect, useMemo, useRef } from 'react';
 import * as d3 from 'd3';
-import { SimulationNodeDatum } from 'd3';
-import { useEffect, useRef } from 'react';
 
-import type { DragEvent, NodeDatum } from '@/types';
+import type { SimulationNodeDatum } from 'd3';
+import type { NodeDatum } from '@/types';
 
 import { useNetworkGraph } from '@/hooks/useNetworkGraph';
-import NetworkNodes from './NetworkNodes';
+import { weighValueByMutiply } from '@/utils/chart';
+
 import NetworkLinks from './NetworkLinks';
+import NetworkNodes from './NetworkNodes';
 
 type Props = {
   currentArtistId: string;
 };
 
-const weighValueByMutiply = (value: number, mutiply = 30) =>
-  Math.abs(value - 3) * mutiply;
-
-const NetworkGraph = ({ currentArtistId }: Props) => {
+const NetworkGraph: FC<Props> = ({ currentArtistId }) => {
   const { data } = useNetworkGraph(currentArtistId);
-
   const { nodes, links } = data;
 
   const svgRef = useRef<SVGSVGElement>(null);
@@ -28,22 +26,26 @@ const NetworkGraph = ({ currentArtistId }: Props) => {
   const noNetworkGraphData =
     !nodes || nodes.length === 0 || !links || links.length === 0;
 
-  /**시뮬레이션 */
-  const simulation = d3
-    .forceSimulation(nodes as SimulationNodeDatum[])
-    .velocityDecay(0.7)
-    .force('center', d3.forceCenter(width / 2, height / 2))
-    .force('charge', d3.forceManyBody().strength(-1000))
-    .force(
-      'link',
-      d3.forceLink(links).id((d: NodeDatum) => d.id as string),
-    )
-    .force(
-      'collide',
-      d3
-        .forceCollide()
-        .radius((d: NodeDatum) => weighValueByMutiply(d.value as number, 50)),
-    );
+  /** 시뮬레이션 기본 동작 */
+  const simulation = useMemo(() => {
+    return d3
+      .forceSimulation(nodes as SimulationNodeDatum[])
+      .velocityDecay(0.7)
+      .force('center', d3.forceCenter(width / 2, height / 2))
+      .force('charge', d3.forceManyBody().strength(-1000))
+      .force(
+        'link',
+        d3.forceLink(links).id((d: NodeDatum) => d.id as string),
+      )
+      .force(
+        'collide',
+        d3
+          .forceCollide()
+          .radius((d: NodeDatum) => weighValueByMutiply(d.value as number, 50)),
+      );
+  }, [height, links, nodes, width]);
+
+  /** 시뮬레이션 On */
   useEffect(() => {
     if (noNetworkGraphData) return;
 
@@ -55,32 +57,6 @@ const NetworkGraph = ({ currentArtistId }: Props) => {
       d3.select('svg g').attr('transform', e.transform);
     let zoom = d3.zoom<SVGSVGElement, unknown>().on('zoom', handleZoom);
     networkGraphElement.call(zoom);
-
-    /** dragging */
-    function drag(simulation: d3.Simulation<SimulationNodeDatum, undefined>) {
-      function dragstarted(e: DragEvent) {
-        if (!e.active) simulation.alphaTarget(0.3).restart();
-        e.subject.fx = e.subject.x;
-        e.subject.fy = e.subject.y;
-      }
-
-      function dragged(e: DragEvent) {
-        e.subject.fx = e.x;
-        e.subject.fy = e.y;
-      }
-
-      function dragended(e: DragEvent) {
-        if (!e.active) simulation.alphaTarget(0);
-        e.subject.fx = null;
-        e.subject.fy = null;
-      }
-
-      return d3
-        .drag()
-        .on('start', dragstarted)
-        .on('drag', dragged)
-        .on('end', dragended);
-    }
 
     const node = d3.selectAll('.node');
     const link = d3.selectAll('.link');
@@ -101,10 +77,10 @@ const NetworkGraph = ({ currentArtistId }: Props) => {
 
   return (
     <div className="w-full h-[80vh]">
-      <svg ref={svgRef} className="network-chart w-full h-full">
+      <svg ref={svgRef} className="w-full h-full">
         <g className="w-full h-full">
-          <NetworkLinks data={links} />
-          <NetworkNodes data={nodes} />
+          <NetworkLinks links={links} />
+          <NetworkNodes nodes={nodes} simulation={simulation} />
         </g>
       </svg>
     </div>
