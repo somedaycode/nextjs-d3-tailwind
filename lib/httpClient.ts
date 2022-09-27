@@ -1,5 +1,5 @@
 export default interface HTTPClient {
-  get<T>(url: string): Promise<T>;
+  get<T>(url: string, options?: RequestInit): Promise<T>;
   post<T>(url: string, options: RequestInit): Promise<T>;
 }
 
