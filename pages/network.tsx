@@ -25,7 +25,7 @@ const Network: NextPage = () => {
       <main className="w-3/4 h-full">
         <NetworkGraph currentArtistId={currentArtistId} />
       </main>
-      <aside className="fixed left-0 w-1/5 h-full bg-cyan-600">aside</aside>
+      {/* <aside className="fixed left-0 w-1/5 h-full bg-cyan-600">aside</aside> */}
     </div>
   );
 };

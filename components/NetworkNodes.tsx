@@ -1,48 +1,90 @@
-import { Node } from '@/types';
+import { FC, useCallback, useEffect, useRef } from 'react';
+import { drag, select, SimulationNodeDatum } from 'd3';
+
 import { fillCircleByValue, weighValueByMutiply } from '@/utils/chart';
-import { select } from 'd3';
-import { useEffect, useRef } from 'react';
+import { DragEvent, Node } from '@/types';
 
 type NodesProps = {
-  data: Node[];
+  nodes: Node[];
+  simulation: d3.Simulation<d3.SimulationNodeDatum, undefined>;
 };
 
 type NodeProps = {
-  data: Node;
+  node: Node;
+  simulation: d3.Simulation<d3.SimulationNodeDatum, undefined>;
 };
 
-const NetworkNode = ({ data }: NodeProps) => {
+const NetworkNode = ({ node, simulation }: NodeProps) => {
   const circleRef = useRef<SVGCircleElement>(null);
   const textRef = useRef<SVGTextElement>(null);
 
+  const handleDragging = useCallback(
+    (graph: d3.Simulation<SimulationNodeDatum, undefined>) => {
+      function dragstarted(e: DragEvent) {
+        if (!e.active) graph.alphaTarget(0.3).restart();
+        e.subject.fx = e.subject.x;
+        e.subject.fy = e.subject.y;
+      }
+
+      function dragged(e: DragEvent) {
+        e.subject.fx = e.x;
+        e.subject.fy = e.y;
+      }
+
+      function dragended(e: DragEvent) {
+        if (!e.active) graph.alphaTarget(0);
+        e.subject.fx = null;
+        e.subject.fy = null;
+      }
+
+      return drag()
+        .on('start', dragstarted)
+        .on('drag', dragged)
+        .on('end', dragended);
+    },
+    [],
+  );
+
   useEffect(() => {
     select(circleRef.current)
-      .data([data])
-      .attr('r', (d) => weighValueByMutiply(d.value))
-      .attr('fill', (d) => fillCircleByValue(d.value));
+      .data([node])
+      .call(handleDragging(simulation) as any);
 
-    select(textRef.current)
-      .data([data])
-      .text((d) => d.name)
-      .attr('dy', 6)
-      .style('text-anchor', 'middle');
-  }, [data]);
+    select(textRef.current).data([node]);
+  }, [node, handleDragging, simulation]);
+
+  const hoveringStyle =
+    'hover:text-5xl hover:fill-sky-800 hover:outline-double hover:outline-sky-800 hover:z-100';
 
   return (
     <g>
-      <circle className="node" ref={circleRef}></circle>
-      <text className="text text-sm" ref={textRef}></text>
+      <circle
+        className="node"
+        r={weighValueByMutiply(node.value)}
+        fill={fillCircleByValue(node.value)}
+        ref={circleRef}
+      />
+      <text
+        className={`text text-md ${hoveringStyle}`}
+        dy={6}
+        ref={textRef}
+        textAnchor="middle"
+      >
+        {node.name}
+      </text>
     </g>
   );
 };
 
-const NetworkNodes = ({ data }: NodesProps = { data: [] }) => {
+const NetworkNodes: FC<NodesProps> = ({ nodes, simulation }) => {
   return (
     <g className="nodes">
-      {data?.length === 0 ? (
-        <g className="node"></g>
+      {nodes?.length === 0 ? (
+        <g className="node" />
       ) : (
-        data?.map((node: Node) => <NetworkNode key={node.id} data={node} />)
+        nodes?.map((node: Node) => (
+          <NetworkNode key={node.id} node={node} simulation={simulation} />
+        ))
       )}
     </g>
   );
